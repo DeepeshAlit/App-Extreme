@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form } from 'react-bootstrap';
 import { SelectBox } from 'devextreme-react/select-box';
-import Validator, { RequiredRule } from 'devextreme-react/validator';
+import Validator, { RequiredRule,AsyncRule } from 'devextreme-react/validator';
 import Button from 'devextreme-react/button';
 import TextBox from 'devextreme-react/text-box';
 import { Popup } from 'devextreme-react/popup';
+import axios from 'axios';
 
 
 const DoctorModal = ({ show, handleClose, handleSave, selectedDoctor, doctor, handleChange, setDoctor, specialtiesList, handleSpecialtyChange, darkMode, duplicateError }) => {
-
+    const token = localStorage.getItem("token");
     useEffect(() => {
         debugger
         console.log("selectedDoctor", selectedDoctor)
@@ -30,7 +31,56 @@ const DoctorModal = ({ show, handleClose, handleSave, selectedDoctor, doctor, ha
 
     console.log("formattedSpecialtyOptions", formattedSpecialtyOptions)
     console.log("first", doctor)
-    
+
+    async function sendRequest(value) {
+        if(!selectedDoctor){
+        try {
+            const response = await axios.get(`https://localhost:7137/api/Doctor/CheckDuplicateDoctorName/${value}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if(response.status == 200){
+                return true
+            }else{
+                return false;
+            }
+        } catch (error) {
+            console.error('Error checking duplicate item name:', error);
+            return false;
+        }
+    }else{
+        
+        if(selectedDoctor.DoctorName == value){
+            return true
+        }else{
+            try {
+                const response = await axios.get(`https://localhost:7137/api/Doctor/CheckDuplicateDoctorName/${value}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                if(response.status == 200){
+                    return true
+                }else{
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error checking duplicate item name:', error);
+                return false;
+            }
+        }
+    }
+    }
+
+
+
+    function asyncValidation(params) {
+        debugger
+        return sendRequest(params.value);
+    }
+
+
     return (
         <div>
             {/* <Modal show={show} onHide={handleClose}>
@@ -147,9 +197,9 @@ const DoctorModal = ({ show, handleClose, handleSave, selectedDoctor, doctor, ha
           options={getCloseButtonOptions()}
         /> */}
                 {/* <p> */}
-                    {/* Full Name:&nbsp; */}
-                    {/* <span>{currentEmployee.FirstName}</span>&nbsp; */}
-                    {/* <span>{currentEmployee.LastName}</span> */}
+                {/* Full Name:&nbsp; */}
+                {/* <span>{currentEmployee.FirstName}</span>&nbsp; */}
+                {/* <span>{currentEmployee.LastName}</span> */}
                 {/* </p> */}
                 {/* <p>
           Birth Date: <span>{currentEmployee.BirthDate}</span>
@@ -179,6 +229,10 @@ const DoctorModal = ({ show, handleClose, handleSave, selectedDoctor, doctor, ha
                         >
                             <Validator>
                                 <RequiredRule message="Doctor Name is required" />
+                                <AsyncRule
+                                    message="Item Already Exist"
+                                    validationCallback={asyncValidation}
+                                />
                             </Validator>
                         </TextBox>
                     </Form.Group>
@@ -222,12 +276,12 @@ const DoctorModal = ({ show, handleClose, handleSave, selectedDoctor, doctor, ha
                     </Form.Group>
                 </Form>
                 <div className='d-flex justify-content-end gap-2 mt-4'>
-                <Button onClick={handleClose}>Close</Button>
-                <Button
-                    text="Contained"
-                    type="default"
-                    stylingMode="contained"
-                    useSubmitBehavior={true} onClick={handleSave}>{selectedDoctor ? 'Update' : 'Save'}</Button>
+                    <Button onClick={handleClose}>Close</Button>
+                    <Button
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        useSubmitBehavior={true} onClick={handleSave}>{selectedDoctor ? 'Update' : 'Save'}</Button>
                 </div>
             </Popup>
         </div>

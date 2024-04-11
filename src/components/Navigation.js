@@ -35,6 +35,11 @@ const Navigation = () => {
                   Home
                 </NavLink>
               </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" activeClassName="active" to="/item">
+                  Items
+                </NavLink>
+              </li>
               {/* <li className="nav-item">
                 <NavLink className="nav-link" activeClassName="active" to="/appointment">
                   Appointments
@@ -45,16 +50,12 @@ const Navigation = () => {
                   Receipts
                 </NavLink>
               </li>
-              <li className="nav-item">
-                <NavLink className="nav-link" activeClassName="active" to="/item">
-                  Items
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink className="nav-link" activeClassName="active" to="/specialty">
-                  Specialties
-                </NavLink>
-              </li>  */}
+            */}
+            <li className="nav-item">
+              <NavLink className="nav-link" activeClassName="active" to="/specialty">
+                Specialties
+              </NavLink>
+            </li>
               <li className="nav-item">
                 <NavLink className="nav-link" activeClassName="active" to="/doctor">
                   Doctors
