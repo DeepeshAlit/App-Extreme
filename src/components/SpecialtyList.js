@@ -4,6 +4,7 @@ import SpecialtyModal from './SpecialtyModal';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
+import DataGrid, { Column, Button as GridButton, Scrolling,Editing,Grouping,GroupPanel,Sorting,FilterRow,HeaderFilter} from 'devextreme-react/data-grid';
 
 const SpecialtyList = ({darkMode}) => {
     const token = localStorage.getItem("token");
@@ -47,7 +48,7 @@ const SpecialtyList = ({darkMode}) => {
             });
             const specialities = response.data;
             setSpecialties(specialities)
-            console.log('Speciality list:', specialities);
+            console.log('Speciality get list:', specialities);
         } catch (error) {
             console.error('Error fetching speciality list:', error.message);
         }
@@ -198,7 +199,7 @@ const SpecialtyList = ({darkMode}) => {
                     Add
                 </Button>
             </div>
-            <Table striped bordered hover variant={darkMode?"dark":"light"}>
+            {/* <Table striped bordered hover variant={darkMode?"dark":"light"}>
                 <thead>
                     <tr>
                         <th>S.No.</th>
@@ -224,7 +225,19 @@ const SpecialtyList = ({darkMode}) => {
                         </tr>
                     ))}
                 </tbody>
-            </Table>
+            </Table> */}
+            <DataGrid
+            dataSource={specialties}
+            >
+                <Column dataField='SpecialityName' caption='Speciality Name'/>
+                <Column type='buttons'>
+                <GridButton text='Edit' icon='edit'/>
+                <GridButton text='Delete' icon='trash'/>
+                </Column>
+                    
+                
+
+            </DataGrid>
             <SpecialtyModal
                 show={isModalOpen}
                 handleClose={handleCloseModal}
