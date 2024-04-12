@@ -480,7 +480,7 @@ const DoctorList = ({ darkMode }) => {
                 />
                 <Grouping autoExpandAll={autoExpandAll} />
                 <GroupPanel visible={true} /> {/* or "auto" */}
-                <Sorting mode="single" />
+                <Sorting mode="multiple" />
                 <FilterRow visible={true} />
                 <HeaderFilter visible={true} allowSearch="true" />
                 <Column dataField="DoctorName" caption="Doctor Name"

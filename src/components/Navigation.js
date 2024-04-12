@@ -40,11 +40,12 @@ const Navigation = () => {
                   Items
                 </NavLink>
               </li>
-              {/* <li className="nav-item">
+              <li className="nav-item">
                 <NavLink className="nav-link" activeClassName="active" to="/appointment">
                   Appointments
                 </NavLink>
               </li>
+              {/* 
               <li className="nav-item">
                 <NavLink className="nav-link" activeClassName="active" to="/receipt">
                   Receipts

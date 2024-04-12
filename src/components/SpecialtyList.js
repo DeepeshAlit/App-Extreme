@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Table } from 'react-bootstrap';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Button } from 'react-bootstrap';
 import SpecialtyModal from './SpecialtyModal';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
-import DataGrid, { Column, Button as GridButton, Scrolling,Editing,Grouping,GroupPanel,Sorting,FilterRow,HeaderFilter} from 'devextreme-react/data-grid';
+import DataGrid, { Column, Button as GridButton, Scrolling, Editing, Grouping, GroupPanel, Sorting, FilterRow, HeaderFilter, Selection, MasterDetail } from 'devextreme-react/data-grid';
+import CheckBox from 'devextreme-react/check-box';
 
-const SpecialtyList = ({darkMode}) => {
+const SpecialtyList = ({ darkMode }) => {
     const token = localStorage.getItem("token");
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,12 +27,15 @@ const SpecialtyList = ({darkMode}) => {
         SpecialityName: false,
         Description: false
     })
-    const [deleteSpecialtyId,setDeleteSpecialtyId] = useState(null);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
-    const [inUseError,setInUseError] = useState(false)
+    const [deleteSpecialtyId, setDeleteSpecialtyId] = useState(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [inUseError, setInUseError] = useState(false)
     const deleteMessage = "Are you sure you want to delete this Specialty?"
-    const [duplicateError,setDuplicateError] = useState(false)
-
+    const [duplicateError, setDuplicateError] = useState(false)
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [autoExpandAll, setAutoExpandAll] = useState(true);
+    // const [selectedEmployeeNames, setSelectedEmployeeNames] = useState('Nobody has been selected');
+    // const [prefix, setPrefix] = useState('');
 
     useEffect(() => {
         if (!token) {
@@ -115,7 +119,7 @@ const SpecialtyList = ({darkMode}) => {
                 handleCloseModal();
             } catch (error) {
                 console.error('Error updating speciality:', error.message);
-                if (error.response.data.includes("Cannot accept duplicate speciality name.") ){
+                if (error.response.data.includes("Cannot accept duplicate speciality name.")) {
                     setDuplicateError(true);
                 }
             }
@@ -138,12 +142,12 @@ const SpecialtyList = ({darkMode}) => {
                 handleCloseModal();
             } catch (error) {
                 console.error('Error inserting speciality:', error.message);
-                if (error.response.data.includes("Cannot accept duplicate speciality name.") ){
+                if (error.response.data.includes("Cannot accept duplicate speciality name.")) {
                     setDuplicateError(true);
                 }
             }
         }
-        
+
     };
 
     const handleEditClick = (specialt) => {
@@ -151,10 +155,10 @@ const SpecialtyList = ({darkMode}) => {
         setIsModalOpen(true);
     };
 
-    const handleDeleteClick = async(id) => {
+    const handleDeleteClick = async (id) => {
         setDeleteSpecialtyId(id)
-        setIsDeleteModalOpen(true); 
-      };
+        setIsDeleteModalOpen(true);
+    };
 
     const handleDeleteConfirmed = async () => {
         try {
@@ -164,32 +168,100 @@ const SpecialtyList = ({darkMode}) => {
                 }
             });
             getSpecialityList();
-            setIsDeleteModalOpen(false); 
+            setIsDeleteModalOpen(false);
         } catch (error) {
             console.error('Error deleting item:', error.response.data);
-            if (error.response.data.includes("Selected record exists in Doctors.") ){
-                    setInUseError(true)
+            if (error.response.data.includes("Selected record exists in Doctors.")) {
+                setInUseError(true)
             }
-            
-        }
-      };
 
-    const handleChange = (e) => {
-        setDuplicateError(false)
-        const { name, value } = e.target;
+        }
+    };
+
+    const handleChange = useCallback((name, value) => {
+        //    console.log("handleChange",name,value)
+        //    const { name, value } = e.target;
         setSpeciality(prevState => ({
             ...prevState,
             [name]: value
         }));
-        setSpecialtyError({
-            ...specialtyError, [name]: false
-        })
-    };
+    }, []);
 
     const handleDeleteModalClose = () => {
-        setIsDeleteModalOpen(false); 
+        setIsDeleteModalOpen(false);
         setInUseError(false)
-      };
+    };
+
+    const onSelectionChanged = useCallback(
+        ({ selectedRowKeys: changedRowKeys }) => {
+            console.log("onSelected", changedRowKeys)
+            //   setPrefix(null);
+            setSelectedRowKeys(changedRowKeys);
+            //   setSelectedEmployeeNames(getEmployeeNames(selectedRowsData));
+        }, [],
+    );
+
+    const renderDetail = (props) => {
+        const { Description } = props.data;
+        return (
+            <div>
+                <p >{Description}</p>
+            </div>
+        );
+    };
+
+
+    console.log("specialtyInput", speciality)
+
+    async function sendBatchRequest(url, changes) {
+        debugger
+        console.log("chnages", changes[0].data, url)
+        const updatedSpecialtyData = {
+            ...changes[0].key, ...changes[0].data
+        }
+        const finalData = {
+            specialityID: updatedSpecialtyData?.SpecialityID,
+            specialityName: updatedSpecialtyData?.SpecialityName,
+            isGynac: false,
+            description: updatedSpecialtyData?.Description
+        }
+        try {
+            const response = await axios.put(`${url}`, finalData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            getSpecialityList();
+        } catch (error) {
+            console.error('Error updating doctor:', error.message);
+            // if (error.response.data.includes("Cannot accept duplicate doctor name")) {
+            //     setDuplicateError(true);
+            // }
+        }
+
+    }
+    async function processBatchRequest(url, changes, component) {
+        debugger
+        console.log("promiseBatch", changes, component)
+        await sendBatchRequest(url, changes);
+        await component.refresh(true);
+        component.cancelEditData();
+    }
+    const onSaving = (e) => {
+        debugger
+        console.log("eChanges", e)
+        e.cancel = true;
+        if (e.changes.length) {
+            e.promise = processBatchRequest(`${"https://localhost:7137/api/Speciality/Update/"}`, e.changes, e.component);
+        }
+    };
+    const onAutoExpandAllChanged = useCallback(() => {
+        setAutoExpandAll((previousAutoExpandAll) => !previousAutoExpandAll);
+    }, []);
+
+
+
 
     return (
         <div className="container " style={{ height: "100vh" }}>
@@ -199,46 +271,48 @@ const SpecialtyList = ({darkMode}) => {
                     Add
                 </Button>
             </div>
-            {/* <Table striped bordered hover variant={darkMode?"dark":"light"}>
-                <thead>
-                    <tr>
-                        <th>S.No.</th>
-                        <th>Specialty Name</th>
-                        <th>Description</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {specialties.map((specialt, index) => (
-                        <tr key={specialt.id}>
-                            <td>{index + 1}</td>
-                            <td>{specialt.SpecialityName}</td>
-                            <td>{specialt.Description}</td>
-                            <td className="d-flex">
-                                <Button className="mx-2" variant="info" onClick={() => handleEditClick(specialt)}>
-                                    Edit
-                                </Button>
-                                <Button variant="danger" onClick={() => handleDeleteClick(specialt.SpecialityID)}>
-                                    Delete
-                                </Button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </Table> */}
             <DataGrid
-            dataSource={specialties}
+                dataSource={specialties}
+                selectedRowKeys={selectedRowKeys}
+                onSelectionChanged={onSelectionChanged}
+                onSaving={onSaving}
             >
-                <Column dataField='SpecialityName' caption='Speciality Name'/>
-                <Column type='buttons'>
-                <GridButton text='Edit' icon='edit'/>
-                <GridButton text='Delete' icon='trash'/>
-                </Column>
-                    
-                
+                <Scrolling mode='infinite' />
+                <Editing mode='batch'
+                    allowDeleting={true}
+                    allowUpdating={true}
+                />
+                <Selection
+                    // showCheckBoxesMode='false'
+                    mode="multiple" />
+                <GroupPanel visible={true} />
+                <Sorting mode='single' />
+                <FilterRow visible={true} />
+                <HeaderFilter visible={true} allowSearch="true" />
+                <MasterDetail
+                    autoExpandAll={autoExpandAll}
+                    enabled={true}
+                    render={renderDetail}
+                />
+                <Column dataField='SpecialityName' caption='Speciality Name' >
 
+                </Column>
+                <Column type='buttons'>
+                    <GridButton text='Edit' icon='edit' onClick={(row) => handleEditClick(row.row.data)} />
+                    <GridButton text='Delete' icon='trash' onClick={(row) => handleDeleteClick(row.row.data.SpecialityID)} />
+                </Column>
             </DataGrid>
-            <SpecialtyModal
+            <span className="caption">Selected Records:</span> <span>{selectedRowKeys.length ? (selectedRowKeys.map((selectedRow) => selectedRow.SpecialityName).join(',')) : "No Record Selected"}</span>
+            <div>
+                <CheckBox
+                    text="Expand All"
+                    id="autoExpand"
+                    value={autoExpandAll}
+                    onValueChanged={onAutoExpandAllChanged}
+                />
+            </div>
+
+            {isModalOpen && <SpecialtyModal
                 show={isModalOpen}
                 handleClose={handleCloseModal}
                 handleSave={handleSave}
@@ -251,7 +325,8 @@ const SpecialtyList = ({darkMode}) => {
                 specialtyError={specialtyError}
                 duplicateError={duplicateError}
                 darkMode={darkMode}
-            />
+            />}
+
             <DeleteConfirmationModal
                 show={isDeleteModalOpen}
                 handleClose={handleDeleteModalClose}

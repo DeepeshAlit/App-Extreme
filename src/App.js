@@ -8,7 +8,7 @@ import Home from './components/Home';
 import DoctorList from './components/DoctorList';
 import SpecialtyList from './components/SpecialtyList';
 import ItemList from './components/ItemList';
-// import AppointmentList from './components/AppointmentList';
+import AppointmentList from './components/AppointmentList';
 // import ReceiptList from './components/ReceiptList';
 // import { useState } from 'react';
 // import { Button } from 'react-bootstrap';
@@ -27,7 +27,8 @@ function App() {
             <Route path="/doctor" element={<DoctorList/>} />
             <Route path="/item" element={<ItemList/>} />
             <Route path="/specialty" element={<SpecialtyList />} />
-            {/* <Route path="/appointment" element={<AppointmentList darkMode={darkMode}/>} />
+            <Route path="/appointment" element={<AppointmentList/>} />
+            {/*
             <Route path="/receipt" element={<ReceiptList darkMode={darkMode}/>} /> */}
           </Routes>
         </BrowserRouter>
