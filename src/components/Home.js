@@ -64,6 +64,7 @@ export default function Home() {
     [setCurrentTab],
   );
   return (
+    <div>
     <div className="widget-container">
       <HtmlEditor
         height="725px"
@@ -149,6 +150,7 @@ export default function Home() {
           />
         </div>
       </div>
+    </div>
     </div>
   );
 }

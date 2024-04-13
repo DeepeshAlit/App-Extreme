@@ -45,3 +45,17 @@
    /* width:fit-content!important;  */
 
 }
+.dx-datagrid-drag-action{
+  text-align: left !important;
+}
+.dx-column-indicators{
+  float: right !important;
+}
+
+.navLink {
+  text-decoration: none;
+}
+
+.navLink:hover {
+  color: black; 
+}

@@ -71,7 +71,7 @@ const AppointmentModal = ({ show, handleClose, handleSave, selectedAppointment, 
     useEffect(() => {
         let filterDoctor = doctorsList.filter(doctor => doctor.SpecialityID === parseInt(patientAppointment.specialityID));
         setFilterDoctor(filterDoctor)
-    }, [patientAppointment.specialityID])
+    }, [patientAppointment.specialityID,doctorsList])
 
     useEffect(() => {
         if (selectedAppointment) {
@@ -100,13 +100,13 @@ const AppointmentModal = ({ show, handleClose, handleSave, selectedAppointment, 
     console.log("last", patientAppointment)
 
     const formattedDoctorOptions = filterDoctor.map(doctor => ({
-        label: doctor.DoctorName,
-        value: doctor.DoctorID
+        Name: doctor.DoctorName,
+        ID: doctor.DoctorID
     }));
 
     const formattedSpecialtyOptions = specialtiesList.map(specialty => ({
-        label: specialty.SpecialityName,
-        value: specialty.SpecialityID
+        Name: specialty.SpecialityName,
+        ID: specialty.SpecialityID
     }));
 
     const formattedStateOptions = stateList.map(state => ({
@@ -417,7 +417,7 @@ const AppointmentModal = ({ show, handleClose, handleSave, selectedAppointment, 
                 defaultValue={now}
                 value={patientAppointment.appointmentDateTime}
                 min={min}
-                max={now}
+                // max={now}
                 // elementAttr={dateBoxAttributes}
                 maxLength={50}
                 label="Date and Time"
@@ -599,14 +599,68 @@ const AppointmentModal = ({ show, handleClose, handleSave, selectedAppointment, 
                 value={
                     patientAppointment.cityID
                 }
-                // onValueChanged={handleGenderChange}
+                onValueChanged={handleCityChange}
                 showDropDownButton={true}
                 label="City"
                 labelMode="floating"
                 validationMessagePosition="down"
             >
                 <Validator>
-                    <RequiredRule message="Please Select the State" />
+                    <RequiredRule message="Please Select the City" />
+                </Validator>
+            </SelectBox>
+
+            <TextBox
+                name='reasonForAppointment'
+                label='Reason For Appointment'
+                labelMode='floating'
+                placeholder='Reason For Appointment'
+                value={patientAppointment.reasonForAppointment}
+                onValueChange={(e) => handleChange("reasonForAppointment", e)}
+                valueChangeEvent='input'
+                showClearButton={true}
+                maxLength={20}
+                validationMessagePosition='down'
+            >
+                <Validator>
+                    <RequiredRule message='Please Enter Reason For Appointment' />
+                </Validator>
+            </TextBox>
+
+            <SelectBox
+                searchEnabled={true}
+                dataSource={formattedSpecialtyOptions}
+                displayExpr={"Name"}
+                valueExpr={"ID"}
+                value={
+                    patientAppointment.specialityID
+                }
+                onValueChanged={handleSpecialtyChange}
+                showDropDownButton={true}
+                label="Speciality"
+                labelMode="floating"
+                validationMessagePosition="down"
+            >
+                <Validator>
+                    <RequiredRule message="Please Select the Speciality" />
+                </Validator>
+            </SelectBox>
+            <SelectBox
+                searchEnabled={true}
+                dataSource={formattedDoctorOptions}
+                displayExpr={"Name"}
+                valueExpr={"ID"}
+                value={
+                    patientAppointment.doctorID
+                }
+                onValueChanged={handleDoctorChange}
+                showDropDownButton={true}
+                label="Doctor"
+                labelMode="floating"
+                validationMessagePosition="down"
+            >
+                <Validator>
+                    <RequiredRule message="Please Select the Doctor" />
                 </Validator>
             </SelectBox>
 

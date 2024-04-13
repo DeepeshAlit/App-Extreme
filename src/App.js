@@ -20,7 +20,9 @@ function App() {
   return (
     <div className='d-flex' >
         <BrowserRouter>
+        <div>
           <Navigation />
+          </div>
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/home" element={<Home />} />
@@ -37,3 +39,37 @@ function App() {
 }
 
 export default App;
+
+// import React, { useCallback, useState } from 'react';
+// import { Routes, Route } from 'react-router-dom';
+// import { Drawer } from 'devextreme-react';
+// import NavigationList from './components/NavigationList';
+// import Home from './components/Home';
+// import DoctorList from './components/DoctorList';
+
+// function App() {
+//     const [state, setState] = useState(false);
+
+//     const renderList = useCallback(() => {
+//         const stateHandler = (newState) => setState(newState);
+//         return <NavigationList stateHandler={stateHandler} />;
+//     }, []);
+
+//     return (
+//         <div className='d-flex'>
+//              <Drawer 
+//                 render={renderList}>
+//                 <div id="view">
+//                     <Routes>
+//                         <Route exact path="/home" element={<Home />} />
+//                         <Route path="/doctor" element={<DoctorList />} />
+//                         {/* <Route path="views/spam" element={<Spam />} />
+//                         <Route path="views/trash" element={<Trash />} /> */}
+//                     </Routes>
+//                 </div>
+//             </Drawer>
+//         </div>
+//     );
+// }
+
+// export default App;

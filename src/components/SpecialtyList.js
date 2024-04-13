@@ -297,7 +297,8 @@ const SpecialtyList = ({ darkMode }) => {
                 <Column dataField='SpecialityName' caption='Speciality Name' >
 
                 </Column>
-                <Column type='buttons'>
+                <Column type='buttons'
+                >
                     <GridButton text='Edit' icon='edit' onClick={(row) => handleEditClick(row.row.data)} />
                     <GridButton text='Delete' icon='trash' onClick={(row) => handleDeleteClick(row.row.data.SpecialityID)} />
                 </Column>

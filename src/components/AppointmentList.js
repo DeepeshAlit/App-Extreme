@@ -63,7 +63,7 @@ const AppointmentList = ({ darkMode }) => {
     const [value, setValue] = useState(new Date(1981, 3, 27));
     // const [filterDoctor,setFilterDoctor] = useState([]);
 
-    
+
 
     useEffect(() => {
         if (!token) {
@@ -76,6 +76,8 @@ const AppointmentList = ({ darkMode }) => {
         let filteredCities = cityList.filter(city => city.StateID === parseInt(patientAppointment.stateID));
         setFilterCity(filteredCities)
     }, [patientAppointment.stateID])
+
+
 
 
     // useEffect(()=>{
@@ -228,7 +230,7 @@ const AppointmentList = ({ darkMode }) => {
                 "fullName": patientAppointment.fullName,
                 "dob": patientAppointment.dob,
                 "gender": parseInt(patientAppointment.gender),
-                "mobileNo": patientAppointment.mobileNo,
+                "mobileNo": (patientAppointment.mobileNo).toString,
                 "maritalStatus": parseInt(patientAppointment.maritalStatus),
                 "address": patientAppointment.address,
                 "stateID": parseInt(patientAppointment.stateID),
@@ -268,7 +270,7 @@ const AppointmentList = ({ darkMode }) => {
                 "fullName": patientAppointment.fullName,
                 "dob": patientAppointment.dob,
                 "gender": parseInt(patientAppointment.gender),
-                "mobileNo": patientAppointment.mobileNo,
+                "mobileNo": (patientAppointment.mobileNo).toString,
                 "maritalStatus": parseInt(patientAppointment.maritalStatus),
                 "address": patientAppointment.address,
                 "stateID": parseInt(patientAppointment.stateID),
@@ -321,21 +323,7 @@ const AppointmentList = ({ darkMode }) => {
 
 
 
-    // const handleChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setPatientAppointment(prevState => ({
-    //         ...prevState,
-    //         [name]: value
-    //     }));
-    //     if (name === 'mobileNo') {
-    //         setMobileValid(false);
-    //     }
-    //     setPatientAppointmentError({
-    //         ...patientAppointmentError,
-    //         [name]: false
-    //     });
-    // };
-
+   
     const handleChange = useCallback((name, value) => {
         //    console.log("handleChange",name,value)
         //    const { name, value } = e.target;
@@ -351,49 +339,39 @@ const AppointmentList = ({ darkMode }) => {
         setPatientAppointmentError({ ...patientAppointmentError, dob: false })
     };
 
-    // const handleDateTimeChange = (date) => {
-    //     console.log("dateandtime", date._d)
-    //     setPatientAppointment({ ...patientAppointment, appointmentDateTime: date._d });
-    //     setPatientAppointmentError({ ...patientAppointmentError, appointmentDateTime: false })
-    // };
-
-    // const handleDateTimeChange = (h) => {
-    //            console.log("dateandtime", h)
-    //            setValue(h);
-    //   };
 
     const onDateTimeValueChanged = useCallback((args) => {
         // setDateValue(args.value);
-        setPatientAppointment({ ...patientAppointment, appointmentDateTime: args.value })
-    },[patientAppointment.appointmentID]);
+        // setPatientAppointment({ ...patientAppointment, appointmentDateTime: args.value })
+        setPatientAppointment((prevApp) => ({
+            ...prevApp,
+            appointmentDateTime: args.value
+        }));
+    }, []);
     const onDateValueChanged = useCallback((args) => {
         // setDateValue(args.value);
-        setPatientAppointment({ ...patientAppointment, dob: args.value })
-    },[patientAppointment.appointmentID]);
+        // setPatientAppointment({ ...patientAppointment, dob: args.value })
+        setPatientAppointment((prevApp) => ({
+            ...prevApp,
+            dob: args.value
+        }));
+    }, []);
 
     const handleDoctorChange = (selectedOption) => {
         setPatientAppointment({ ...patientAppointment, doctorID: selectedOption.value });
         setPatientAppointmentError({ ...patientAppointmentError, doctorID: false })
     };
 
-    const handleSpecialtyChange = (selectedOption) => {
-        setPatientAppointment({ ...patientAppointment, specialityID: selectedOption.value });
-        setPatientAppointmentError({ ...patientAppointmentError, specialityID: false })
-        //  let filterDoctor = doctorsList.filter(doctor => doctor.SpecialityID === parseInt(selectedOption.value));
-        // setFilterDoctor(filterDoctor)
-    };
+  
 
-    // const handleStateChange = (selectedOption) => {
-    //     setPatientAppointment({ ...patientAppointment, stateID: selectedOption.value });
-    //     setPatientAppointmentError({ ...patientAppointmentError, stateID: false })
-    //     // let filteredCities = cityList.filter(city => city.StateID === parseInt(selectedOption.value));
-    //     // setFilterCity(filteredCities)
-    // };
+    const handleSpecialtyChange = useCallback((args) => {
+        setPatientAppointment((prevApp) => ({
+            ...prevApp,
+            specialityID: args.value
+        }));
+    }, []);
 
-    // const handleGenderChange = (selectedOption) => {
-    //     setPatientAppointment({ ...patientAppointment, gender: selectedOption.value });
-    //     setPatientAppointmentError({ ...patientAppointmentError, gender: false })
-    // };
+   
 
     const handleStateChange = useCallback((args) => {
         setPatientAppointment((prevApp) => ({
@@ -415,14 +393,21 @@ const AppointmentList = ({ darkMode }) => {
         }));
     }, []);
 
-    // const handleMaritalStatusChange = (selectedOption) => {
-    //     setPatientAppointment({ ...patientAppointment, maritalStatus: selectedOption.value });
-    //     setPatientAppointmentError({ ...patientAppointmentError, maritalStatus: false })
-    // };
+ 
+    const handleCityChange = useCallback((args) => {
+        setPatientAppointment((prevApp) => ({
+            ...prevApp,
+            cityID: args.value
+        }));
+    }, []);
 
-    const handleCityChange = (selectedOption) => {
-        setPatientAppointment({ ...patientAppointment, cityID: selectedOption.value });
-        setPatientAppointmentError({ ...patientAppointmentError, cityID: false })
+    const customizeHeaderText = (options) => {
+        if (options.value === 0) {
+            return "Male";
+        } else if (options.value === 1) {
+            return "Female";
+        }
+        return options.value;
     };
 
     return (
@@ -431,89 +416,73 @@ const AppointmentList = ({ darkMode }) => {
                 <h3>Appointment List</h3>
                 <Button variant="primary" onClick={handleAddClick}>Add</Button>
             </div>
-            {/* <Table striped bordered hover variant={darkMode?"dark":"light"}>
-                <thead>
-                    <tr>
-                        <th>S.No.</th>
-                        <th>Patient Name</th>
-                        <th>Gender</th>
-                        <th>Doctor Name</th>
-                        <th>Specialty</th>
-                        <th>Education</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {appointments.map((appointment, index) => (
-                        <tr key={appointment?.AppointmentID}>
-                            <td>{index + 1}</td>
-                            <td>{appointment?.FullName}</td>
-                            <td>
-                                {appointment?.Gender === 0 && 'Male'}
-                                {appointment?.Gender === 1 && 'Female'}
-                                {appointment?.Gender === 2 && 'Others'}
-                            </td>
-                            <td>{appointment?.DoctorName}</td>
-                            <td>{appointment?.SpecialityName}</td>
-                            <td>{appointment?.education}</td>
-                            <td>
-                                <Button variant="info" onClick={() => handleEditClick(appointment)}className="mx-2">Edit</Button>
-                                <Button variant="danger" onClick={() => handleDeleteClick(appointment.AppointmentID)}>Delete</Button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </Table> */}
             <DataGrid
                 dataSource={appointments}
                 showBorders={true}
                 width="100%"
-                // height={600}
-                // remoteOperations={true}
-                
+            // height={600}
+            // remoteOperations={true}
+
             >
-                <Column dataField='FullName' caption='Full Name'/>
-                <Column dataField='Gender' caption='Gender' cellRender={data => data.value === 0 ? 'Male' : 'Female'}/>
-                <Column dataField='DoctorName' caption='Doctor Name'/>
-                <Column dataField='SpecialityName' caption='Speciality Name'/>
+                <Scrolling mode='infinite' />
+                <Editing mode='batch'
+                    allowDeleting={true}
+                    allowUpdating={true}
+                />
+                <GroupPanel visible={true} />
+                <Sorting mode='multiple' />
+                <FilterRow visible={true} />
+                <HeaderFilter visible={true} allowSearch="true" />
+                <Column dataField='FullName' caption='Full Name' />
+                <Column dataField='Gender' caption='Gender' cellRender={data => data.value === 0 ? <td>Male</td> : <td>Female</td>}>
+                    <HeaderFilter allowSelectAll={true} dataSource={[
+                        { value: 0, text: 'Male' },
+                        { value: 1, text: 'Female' }
+                    ]} >
+                        
+                    </HeaderFilter>
+                    
+                </Column>
+                <Column dataField='SpecialityName' caption='Speciality Name' />
+                <Column dataField='DoctorName' caption='Doctor Name' />
                 <Column type='buttons'>
-                    <GridButton text='Edit' icon='edit' onClick={(row)=>handleEditClick(row.row.data)}/>
-                    <GridButton text='Delete' icon='trash' onClick={(row)=>handleDeleteClick(row.row.data.AppointmentID)}/>
+                    <GridButton text='Edit' icon='edit' onClick={(row) => handleEditClick(row.row.data)} />
+                    <GridButton text='Delete' icon='trash' onClick={(row) => handleDeleteClick(row.row.data.AppointmentID)} />
                 </Column>
             </DataGrid>
 
-            {isModalOpen &&  
-             <AppointmentModal
-             show={isModalOpen}
-             handleClose={handleCloseModal}
-             handleSave={handleSaveAppointment}
-             selectedAppointment={selectedAppointment}
-             patientAppointment={patientAppointment}
-             handleChange={handleChange}
-             handleDateChange={handleDateChange}
-             // handleDateTimeChange={handleDateTimeChange}
-             // doctorsList={doctorsList}
-             // doctorsList={filterDoctor}
-             handleDoctorChange={handleDoctorChange}
-             // specialtiesList={specialtiesList}
-             handleSpecialtyChange={handleSpecialtyChange}
-             stateList={stateList}
-             handleStateChange={handleStateChange}
-             // cityList={selectedAppointment ? cityList : filterCity}
-             cityList={filterCity}
-             handleCityChange={handleCityChange}
-             setPatientAppointment={setPatientAppointment}
-             patientAppointmentError={patientAppointmentError}
-             darkMode={darkMode}
-             mobileValid={mobileValid}
-             handleGenderChange={handleGenderChange}
-             handleMaritalStatusChange={handleMaritalStatusChange}
-             onDateTimeValueChanged={onDateTimeValueChanged}
-            //  appointments={appointments}
-             onDateValueChanged={onDateValueChanged}
-         />
+            {isModalOpen &&
+                <AppointmentModal
+                    show={isModalOpen}
+                    handleClose={handleCloseModal}
+                    handleSave={handleSaveAppointment}
+                    selectedAppointment={selectedAppointment}
+                    patientAppointment={patientAppointment}
+                    handleChange={handleChange}
+                    handleDateChange={handleDateChange}
+                    // handleDateTimeChange={handleDateTimeChange}
+                    // doctorsList={doctorsList}
+                    // doctorsList={filterDoctor}
+                    handleDoctorChange={handleDoctorChange}
+                    // specialtiesList={specialtiesList}
+                    handleSpecialtyChange={handleSpecialtyChange}
+                    stateList={stateList}
+                    handleStateChange={handleStateChange}
+                    // cityList={selectedAppointment ? cityList : filterCity}
+                    cityList={filterCity}
+                    handleCityChange={handleCityChange}
+                    setPatientAppointment={setPatientAppointment}
+                    patientAppointmentError={patientAppointmentError}
+                    darkMode={darkMode}
+                    mobileValid={mobileValid}
+                    handleGenderChange={handleGenderChange}
+                    handleMaritalStatusChange={handleMaritalStatusChange}
+                    onDateTimeValueChanged={onDateTimeValueChanged}
+                    //  appointments={appointments}
+                    onDateValueChanged={onDateValueChanged}
+                />
             }
-           
+
             <DeleteConfirmationModal
                 show={isDeleteModalOpen}
                 handleClose={handleDeleteModalClose}
