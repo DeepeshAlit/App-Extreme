@@ -1,3 +1,5 @@
+
+import "./MyComponent.scss"
 import React, { useState, useEffect } from 'react';
 import { Modal, Form } from 'react-bootstrap';
 import { SelectBox } from 'devextreme-react/select-box';
@@ -6,6 +8,7 @@ import Button from 'devextreme-react/button';
 import TextBox from 'devextreme-react/text-box';
 import { Popup } from 'devextreme-react/popup';
 import axios from 'axios';
+
 
 
 const DoctorModal = ({ show, handleClose, handleSave, selectedDoctor, doctor, handleChange, setDoctor, specialtiesList, handleSpecialtyChange, darkMode, duplicateError }) => {

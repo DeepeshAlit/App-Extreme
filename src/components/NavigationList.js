@@ -8,7 +8,8 @@ const navigation = [
     { id: 2, text: "Doctors", icon: "datapie", path: "doctor" },    
     { id: 3, text: "Appointments", icon: "columnfield", path: "appointment" },
     { id: 4, text: "Items", icon: "check", path: "item" },
-    { id: 5, text: "Specialty", icon: "columnchooser", path: "specialty" }
+    { id: 5, text: "Specialty", icon: "columnchooser", path: "specialty" },
+    { id: 5, text: "Receipt", icon: "columnchooser", path: "receipt" },
 ];
  
 function NavigationList(props){

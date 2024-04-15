@@ -1,6 +1,6 @@
 import 'devextreme/dist/css/dx.light.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import "./App.css";
+import "./App.scss";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from './components/Login';
 import Navigation from './components/Navigation';
@@ -9,7 +9,7 @@ import DoctorList from './components/DoctorList';
 import SpecialtyList from './components/SpecialtyList';
 import ItemList from './components/ItemList';
 import AppointmentList from './components/AppointmentList';
-// import ReceiptList from './components/ReceiptList';
+import ReceiptList from './components/ReceiptList';
 // import { useState } from 'react';
 // import { Button } from 'react-bootstrap';
 
@@ -30,8 +30,8 @@ function App() {
             <Route path="/item" element={<ItemList/>} />
             <Route path="/specialty" element={<SpecialtyList />} />
             <Route path="/appointment" element={<AppointmentList/>} />
-            {/*
-            <Route path="/receipt" element={<ReceiptList darkMode={darkMode}/>} /> */}
+            
+            <Route path="/receipt" element={<ReceiptList />} />
           </Routes>
         </BrowserRouter>
     </div>
